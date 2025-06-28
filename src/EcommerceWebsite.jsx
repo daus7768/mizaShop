@@ -7,6 +7,151 @@ import { ShoppingCart, Search, Upload, Phone, MessageCircle, Star, X, Plus, Minu
   from minor formatting tweaks, so index.html can return to being plain HTML.
 */
 
+// ------------------- Page Component: ProductsPage (top-level) -------------------
+const ProductsPage = ({
+  searchTerm,
+  setSearchTerm,
+  selectedCategory,
+  setSelectedCategory,
+  filteredProducts,
+  addToCart,
+}) => (
+  <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 py-8">
+    <div className="container mx-auto px-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8">
+        <h2 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-schoolBlue to-schoolGreen bg-clip-text text-transparent">
+          🌟 Our Amazing Products
+        </h2>
+        <div className="flex flex-wrap gap-4 mb-6">
+          <div className="relative flex-1 min-w-64">
+            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border-2 border-purple-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+            />
+          </div>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="px-6 py-3 border-2 border-purple-200 rounded-xl focus:border-purple-500 focus:outline-none bg-white"
+          >
+            <option value="all">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="books">Books</option>
+          </select>
+        </div>
+      </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filteredProducts.map((product) => (
+          <div
+            key={product.id}
+            className="bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+          >
+            <div className="relative">
+              <img src={product.image} alt={product.title} className="w-full h-48 object-cover" />
+              <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-800 px-3 py-1 rounded-full text-sm font-bold">
+                ${product.price}
+              </div>
+            </div>
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-2 text-gray-800">{product.title}</h3>
+              <p className="text-gray-600 mb-4">{product.description}</p>
+              <div className="flex items-center mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="text-yellow-400 fill-current" size={16} />
+                ))}
+                <span className="text-gray-600 ml-2">(4.8)</span>
+              </div>
+              <button
+                onClick={() => addToCart(product)}
+                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all"
+              >
+                Add to Cart 🛒
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+// ------------------------------------------------------------------
+
+// ------------------- Page Component: CheckoutPage (top-level) -------------------
+const CheckoutPage = ({
+  cart,
+  checkoutForm,
+  setCheckoutForm,
+  orderSubmitted,
+  handleCheckout,
+  generateInvoice,
+  getTotalPrice,
+}) => (
+  <div className="min-h-screen bg-gradient-to-br from-orange-100 to-red-100 py-8">
+    <div className="container mx-auto px-4 max-w-2xl">
+      <div className="bg-white rounded-3xl shadow-2xl p-8">
+        <h2 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+          💳 Checkout
+        </h2>
+        {orderSubmitted ? (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">✅</div>
+            <h3 className="text-2xl font-bold text-green-600 mb-4">Order Submitted Successfully!</h3>
+            <p className="text-gray-600 mb-8">Thank you for your purchase. Redirecting to homepage...</p>
+            <button onClick={generateInvoice} className="bg-blue-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-600 transition-colors">
+              <Download className="inline mr-2" size={16} />
+              Download Invoice
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleCheckout} className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Name *</label>
+                <input type="text" required value={checkoutForm.name} onChange={(e) => setCheckoutForm((prev) => ({ ...prev, name: e.target.value }))} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition-colors" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number *</label>
+                <input type="tel" required value={checkoutForm.phone} onChange={(e) => setCheckoutForm((prev) => ({ ...prev, phone: e.target.value }))} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition-colors" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Address *</label>
+              <input type="text" required value={checkoutForm.address} onChange={(e) => setCheckoutForm((prev) => ({ ...prev, address: e.target.value }))} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition-colors" />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Remarks</label>
+              <textarea value={checkoutForm.remarks} onChange={(e) => setCheckoutForm((prev) => ({ ...prev, remarks: e.target.value }))} rows="4" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition-colors resize-none" placeholder="Any special instructions..." />
+            </div>
+            <div className="bg-gray-50 p-6 rounded-2xl">
+              <h3 className="font-bold text-lg mb-4">Order Summary</h3>
+              {cart.map((item) => (
+                <div key={item.id} className="flex justify-between items-center mb-2">
+                  <span>{item.title} x{item.quantity}</span>
+                  <span className="font-bold">${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+              ))}
+              <div className="border-t pt-4 mt-4">
+                <div className="flex justify-between items-center text-xl font-bold">
+                  <span>Total:</span>
+                  <span className="text-orange-600">${getTotalPrice()}</span>
+                </div>
+              </div>
+            </div>
+            <button type="submit" className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-4 rounded-2xl text-xl font-bold hover:from-orange-600 hover:to-red-600 transform hover:scale-105 transition-all">
+              Submit Order 🎉
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
+
 const EcommerceWebsite = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [products, setProducts] = useState([
@@ -139,18 +284,58 @@ const EcommerceWebsite = () => {
   const handleCheckout = (e) => {
     e.preventDefault();
 
-    // Build WhatsApp order message
-    const orderLines = cart
-      .map(
-        (item) => `${item.title} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+    // Get current date and time
+    const now = new Date();
+    const orderDate = now.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+    const orderTime = now.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+
+    // Generate unique order ID
+    const orderId = 'MZ' + Date.now().toString().slice(-6);
+
+    // Use only basic emojis for WhatsApp compatibility
+    const itemsText = cart
+      .map((item, index) => 
+        `${index + 1}. ${item.title}\n   Qty: ${item.quantity}\n   Price: $${item.price} each\n   Subtotal: $${(item.price * item.quantity).toFixed(2)}`
       )
-      .join('\n');
-    const message = `Hello, I would like to place an order:%0A%0A${orderLines}%0A%0ATotal: $${getTotalPrice()}%0A%0AName: ${checkoutForm.name}%0APhone: ${checkoutForm.phone}%0AAddress: ${checkoutForm.address}%0ARemarks: ${checkoutForm.remarks || '-'}`;
+      .join('\n\n');
 
-    // Open WhatsApp chat in new tab/window
-    window.open(`https://wa.me/60194341203?text=${message}`, '_blank');
+    // WhatsApp-safe message
+    const message = `🛒 *NEW ORDER FROM MIZASHOP* 🛒
 
-    // Show success state locally
+Order Details:
+Order ID: ${orderId}
+Date: ${orderDate}
+Time: ${orderTime}
+
+Items Ordered:
+${itemsText}
+
+Total Amount: $${getTotalPrice()}
+
+Customer Information:
+Name: ${checkoutForm.name}
+Phone: ${checkoutForm.phone}
+Address: ${checkoutForm.address}
+Remarks: ${checkoutForm.remarks || 'None'}
+
+Thank you for choosing MizaShop!
+We'll process your order shortly and contact you for delivery confirmation.
+
+#MizaShop #Order${orderId}`;
+
+    const whatsappUrl =
+      'https://wa.me/60194341203?text=' + encodeURIComponent(message);
+
+    window.open(whatsappUrl, '_blank');
+
     setOrderSubmitted(true);
     setTimeout(() => {
       setOrderSubmitted(false);
@@ -223,7 +408,16 @@ const EcommerceWebsite = () => {
     </div>
   );
 
-  const ProductsPage = () => (
+  /*
+  // ------------------- Page Component: ProductsPage (top-level) -------------------
+  const ProductsPage = ({
+    searchTerm,
+    setSearchTerm,
+    selectedCategory,
+    setSelectedCategory,
+    filteredProducts,
+    addToCart,
+  }) => (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 py-8">
       <div className="container mx-auto px-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 mb-8">
@@ -283,6 +477,7 @@ const EcommerceWebsite = () => {
       </div>
     </div>
   );
+  */
 
   const CartPage = () => (
     <div className="min-h-screen bg-gradient-to-br from-green-100 to-blue-100 py-8">
@@ -337,7 +532,7 @@ const EcommerceWebsite = () => {
     </div>
   );
 
-  const CheckoutPage = () => (
+  /* const CheckoutPage = () => (
     <div className="min-h-screen bg-gradient-to-br from-orange-100 to-red-100 py-8">
       <div className="container mx-auto px-4 max-w-2xl">
         <div className="bg-white rounded-3xl shadow-2xl p-8">
@@ -397,7 +592,7 @@ const EcommerceWebsite = () => {
         </div>
       </div>
     </div>
-  );
+  ); */
 
   const ContactPage = () => (
     <div className="min-h-screen bg-gradient-to-br from-teal-100 to-cyan-100 py-8">
@@ -516,7 +711,15 @@ const EcommerceWebsite = () => {
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Description *</label>
-                <textarea required value={newProduct.description} onChange={(e) => setNewProduct((prev) => ({ ...prev, description: e.target.value }))} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors resize-none" rows="3" />
+                <textarea
+                  required
+                  value={newProduct.description}
+                  onChange={(e) =>
+                    setNewProduct((prev) => ({ ...prev, description: e.target.value }))
+                  }
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors resize-none"
+                  rows="3"
+                ></textarea>
               </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">Price *</label>
@@ -542,9 +745,28 @@ const EcommerceWebsite = () => {
       )}
       {/* Page Content */}
       {currentPage === 'home' && <HomePage />}
-      {currentPage === 'products' && <ProductsPage />}
+      {currentPage === 'products' && (
+        <ProductsPage
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          filteredProducts={filteredProducts}
+          addToCart={addToCart}
+        />
+      )}
       {currentPage === 'cart' && <CartPage />}
-      {currentPage === 'checkout' && <CheckoutPage />}
+      {currentPage === 'checkout' && (
+          <CheckoutPage
+            cart={cart}
+            checkoutForm={checkoutForm}
+            setCheckoutForm={setCheckoutForm}
+            orderSubmitted={orderSubmitted}
+            handleCheckout={handleCheckout}
+            generateInvoice={generateInvoice}
+            getTotalPrice={getTotalPrice}
+          />
+        )}
       {currentPage === 'contact' && <ContactPage />}
     </div>
   );
